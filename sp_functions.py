@@ -13,7 +13,16 @@ def get_voucher():
     \t\t-----VOUCHER DETAILS-----
     \t\tSERIAL NUMBER: {serial_number}
     \t\tPIN: {pin}
+
+    # # # # # # # # # # # # # # # # # # # # #  #
+    #                                          #
+    #    Please note down your serial number   #
+    #    and pin as you will use them for      #
+    #    school selection                      #
+    #                                          #
+    # # # # # # # # # # # # # # # # # # # # #  #
     ''')
+    return [serial_number,pin]
 
 import csv
 # Define a function to read the CSV file and filter schools
@@ -149,11 +158,77 @@ def get_aggregate(grades):
         if electives[i-1] > electives[i]:
             electives[i],electives[i-1] = electives[i-1], electives[i] # Swapping
         i += 1
-    print(electives)
+    # print(electives)
     aggregate = aggregate + electives[0] + electives[1]
     return aggregate
 
-name,year,school,index = personal_info()        
-grades = BECE_results(name,year,school)
-aggregate = get_aggregate(grades)
-print(f'Aggregate: {aggregate:02}')
+def check_code(code,csv_file):
+    count = 0
+    cat = 'X' # This would be returned when the code matches no school
+    with open(csv_file, newline='') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            if row['Code'] == code:
+                cat = row['Category']
+                count += 1
+    return [bool(count),cat]
+
+def school_selection():
+    def inputs():
+    selected = []
+    school = []
+    # Accepting inputs
+    print("Enter school code, course(separated by commas)")
+    print('\t CODE COURSE')
+    for i in range(1,5):
+        while True:
+            print(f'Choice {i}: ', end = ' ')
+            input_str = input()
+
+            # Splitting the input string by commas and assigning it to a list variable
+            school = input_str.split(',')
+            residence = input("Residential status (Enter D or B): ")
+            code_valid,cat = check_code(school[0],'schools.csv')
+            if code_valid == False:
+                print('No school associated with this code')
+            else:
+                school.append(cat)
+                break
+        school.append(residence) # School = [Code, Course, Category, Residence]
+        selected.append(school)
+        print(' ')
+    return selected
+
+    inputs()
+
+def school_placement(aggregate,selected):
+    '''
+    # 06 - 15 Cat A
+    # 16 - 25 Cat B
+    # 26 - 35 Cat C
+    # 36+ No School
+    '''
+    def get_school(code):
+        with open(csv_file, newline = '') as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                if row['Code'] == code:
+                    school = row['School Name']
+        return school
+    
+    Codes = []
+    for i in selected: # Iterating through each sub list in selected
+        if aggregate <36:
+            if aggregate <= 15:
+                code = i[0] for x == 'A' in i # Iterating through each element in each sub list
+                Codes.append(code) # This ensures that all Cat A schools are stored
+            elif aggregate <= 25:
+                code = i[0] for x == 'B' in i # Iterating through each element in each sub list
+                Codes.append(code) # This ensures that all Cat B schools are stored
+            elif aggregate <= 35:
+                code = i[0] for x == 'C' in i # Iterating through each element in each sub list
+                Codes.append(code) # This ensures that all Cat C schools are stored
+            school = get_school(Codes[0])
+            print(f'You have been placed in {school}')
+        else:
+            print('You were not placed in any school due to your aggregate.')
