@@ -26,33 +26,16 @@ def main():
 
     # 2. Voucher generation, validation and school selection
     serial_number,pin = get_voucher()
-    def menu():
-        input('Press any key to proceed to school selection')
-        print('SCHOOL SELECTION PORTAL')
-        option = int(input('Press 1 to search school(s) or any other key to proceed with school selection'))
-        try:
-            if option == 1:
-                while True:
-                    print('''
-                    What would you like to do?
-                    [1] Perform another search
-                    [2] Continue to school selection
-                    ''')
-                    option = int(input('>> '))
-                    try:
-                        if option == 1:
-                            continue
-                        elif option == 2:
-                            break
-                        else:
-                            print('Enter 1 or 2')
-                selected = school_selection()
-                    except ValueError:
-                        print('Enter 1 or 2')
-            else:
-                selected = school_selection()    
-        except ValueError:
-            selected = school_selection()
-        return selected
-        
+    selected = menu() 
+            
     # 3. School placement
+    placed,school = school_placement(aggregate,selected)
+    if placed == True:
+        print(f'Congrats {name}')
+        print(f'You have been placed in {school}')
+    else:
+        print(f"It's quiet unfortunate, {name}")
+        print('You were not placed in any school due to your aggregate.')
+
+main()
+input('Press any key to exit ......')
