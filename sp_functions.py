@@ -173,33 +173,44 @@ def check_code(code,csv_file):
                 count += 1
     return [bool(count),cat]
 
+# This function returns the names of the schools selected by using the code as key word for the search
+def get_school(code):
+    with open('schools.csv', newline = '') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            if row['Code'] == code:
+                school = row['School Name']
+    return school
+    
 def school_selection():
     def inputs():
-    selected = []
-    school = []
-    # Accepting inputs
-    print("Enter school code, course(separated by commas)")
-    print('\t CODE COURSE')
-    for i in range(1,5):
-        while True:
-            print(f'Choice {i}: ', end = ' ')
-            input_str = input()
+        selected = []
+        school = []
+        School_names = []
+        # Accepting inputs
+        print("Enter school code, course(separated by commas)")
+        print('\t CODE COURSE')
+        for i in range(1,5):
+            while True:
+                print(f'Choice {i}: ', end = ' ')
+                input_str = input()
 
-            # Splitting the input string by commas and assigning it to a list variable
-            school = input_str.split(',')
-            residence = input("Residential status (Enter D or B): ")
-            code_valid,cat = check_code(school[0],'schools.csv')
-            if code_valid == False:
-                print('No school associated with this code')
-            else:
-                school.append(cat)
-                break
-        school.append(residence) # School = [Code, Course, Category, Residence]
-        selected.append(school)
-        print(' ')
+                # Splitting the input string by commas and assigning it to a list variable
+                school = input_str.split(',')
+                residence = input("Residential status (Enter D or B): ")
+                code_valid,cat = check_code(school[0],'schools.csv')
+                if code_valid == False:
+                    print('No school associated with this code')
+                else:
+                    school.append(cat)
+                    School_names.append(get_school(school[0]))
+                    break
+            school.append(residence) # School = [Code, Course, Category, Residence]
+            selected.append(school)
+            print(' ')
+        return selected
+    selected = inputs()
     return selected
-
-    inputs()
 
 def school_placement(aggregate,selected):
     '''
@@ -208,27 +219,56 @@ def school_placement(aggregate,selected):
     # 26 - 35 Cat C
     # 36+ No School
     '''
-    def get_school(code):
-        with open(csv_file, newline = '') as file:
-            reader = csv.DictReader(file)
-            for row in reader:
-                if row['Code'] == code:
-                    school = row['School Name']
-        return school
-    
+
     Codes = []
     for i in selected: # Iterating through each sub list in selected
         if aggregate <36:
             if aggregate <= 15:
-                code = i[0] for x == 'A' in i # Iterating through each element in each sub list
-                Codes.append(code) # This ensures that all Cat A schools are stored
+                for x in i: # Iterating through each element in each sub list
+                    if x == 'A':
+                        code = i[0]
+                        Codes.append(code) # This ensures that all Cat A schools are stored
             elif aggregate <= 25:
-                code = i[0] for x == 'B' in i # Iterating through each element in each sub list
-                Codes.append(code) # This ensures that all Cat B schools are stored
+                for x in i:
+                    if x == 'B':
+                        code = i[0]
+                        Codes.append(code) # This ensures that all Cat B schools are stored
             elif aggregate <= 35:
-                code = i[0] for x == 'C' in i # Iterating through each element in each sub list
-                Codes.append(code) # This ensures that all Cat C schools are stored
+                for x in i:
+                    if x == 'C':
+                        code = i[0]
+                        Codes.append(code) # This ensures that all Cat C schools are stored
             school = get_school(Codes[0])
-            print(f'You have been placed in {school}')
+            return [True,school]
         else:
-            print('You were not placed in any school due to your aggregate.')
+            return [False,'X']
+
+# This function handles searching for schools and calls the school selection function
+def menu():
+        input('Press any key to proceed to school selection')
+        print('SCHOOL SELECTION PORTAL')
+        option = input('Press 1 to search school(s) or any other key to proceed with school selection')
+        try:
+            if int(option) == 1:
+                while True:
+                    print('''
+                    What would you like to do?
+                    [1] Perform another search
+                    [2] Continue to school selection
+                    ''')
+                    option = int(input('>> '))
+                    try:
+                        if option == 1:
+                            continue
+                        elif option == 2:
+                            break
+                        else:
+                            print('Enter 1 or 2')
+                    except ValueError:
+                        print('Enter 1 or 2')
+                selected = school_selection()
+            else:
+                selected = school_selection()
+        except ValueError:
+            selected = school_selection()
+        return selected
