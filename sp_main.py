@@ -25,24 +25,38 @@ def main():
     aggregate = get_aggregate(grades)
 
     # 2. Voucher generation, validation and school selection
-    serial_number,pin = get_voucher()
-    while True:
-        pin = input('Pin: ')
+    print('''
+            Press 1 to get a voucher
+                        OR
+            any other key to continue if you already have a voucher
+         ''')
+    option = input('>> ')
+    if str(option) == '1':
+        serial,pin = get_voucher()
+        update_vouchers(serial,pin)
+
+    print('VOUCHER VALIDATION')
+    tries = 0
+    while tries < 3:
         serial = input('Serial Number: ')
-        state = validate_voucher()
+        pin = input('Pin: ')
+        state = validate_voucher(pin,serial)
         if state == True:
             selected = menu()
+            break
         else: 
             print('Invalid voucher')
-            
-    # 3. School placement
-    placed,school = school_placement(aggregate,selected)
-    if placed == True:
-        print(f'Congrats {name}')
-        print(f'You have been placed in {school}')
-    else:
-        print(f"It's quiet unfortunate, {name}")
-        print('You were not placed in any school due to your aggregate.')
+            tries += 1
+
+    if tries <3:        
+        # 3. School placement
+        placed,school = school_placement(aggregate,selected)
+        if placed == True:
+            print(f'Congrats {name}')
+            print(f'You have been placed in {school}')
+        else:
+            print(f"It's quiet unfortunate, {name}")
+            print('You were not placed in any school due to your aggregate.')
 
 main()
 input('Press any key to exit ......')
