@@ -24,11 +24,32 @@ def get_voucher():
     ''')
     return [serial_number,pin]
 
+# Append generated voucher to vouchers file
+def update_vouchers(serial,pin):
+    try:
+        with open('vouchers.csv','a',newline = '') as file:
+            writer = csv.writer(file)
+            writer.writerow([serial,pin])
+            file.flush()
+            file.close()
+        print('Voucher successfully generated and added to database')
+    except Exception as e:
+        print('An error occured: ',e)
+    print('')
+    
+# This function checks if the voucher details entered are valid
 def validate_voucher(pin,serial):
-    if X:
-        return True
-    else:
-        return False
+    try:
+        with open('vouchers.csv',newline = '') as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                if row['Serial'] == serial:
+                    if row['Pin'] == pin:
+                        return True
+                else:
+                    return False
+    except Exception as e:
+        print('An error occured:',e)
 
 import csv
 # Define a function to read the CSV file and filter schools
