@@ -4,7 +4,7 @@ import string
 def get_voucher():
     #Generating pin
     x = range(100000000)
-    pin = choice(x)
+    pin = str(choice(x))
     
     #Generating serial number
     characters = string.ascii_letters + string.digits  # Letters and numbers
