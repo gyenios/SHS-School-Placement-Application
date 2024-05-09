@@ -24,6 +24,12 @@ def get_voucher():
     ''')
     return [serial_number,pin]
 
+def validate_voucher(pin,serial):
+    if X:
+        return True
+    else:
+        return False
+
 import csv
 # Define a function to read the CSV file and filter schools
 def filter_schools(csv_file, option, region=None, gender=None, category=None):
