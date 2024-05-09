@@ -19,14 +19,16 @@ Based on the aggregate, the student is placed.
 from sp_functions import * 
 
 def main():
-    while True:
-        # 1. Getting Personal info and BECE results
-        name,year,school,index = personal_info()
-        grades = BECE_results(name,year,school)
-        aggregate = get_aggregate(grades)
+    # 1. Getting Personal info and BECE results
+    name,year,school,index = personal_info()
+    grades = BECE_results(name,year,school)
+    aggregate = get_aggregate(grades)
 
-        # 2. Voucher generation, validation and school selection
-        serial_number,pin = get_voucher()
+    # 2. Voucher generation, validation and school selection
+    serial_number,pin = get_voucher()
+    while True:
+        pin = input('Pin: ')
+        serial = input('Serial Number: ')
         state = validate_voucher()
         if state == True:
             selected = menu()
